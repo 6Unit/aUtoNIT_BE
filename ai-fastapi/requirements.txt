@@ -363,3 +363,7 @@ xlsxwriter==3.2.0 ; python_version >= "3.11" and python_version < "3.12"
 xxhash==3.5.0 ; python_version >= "3.11" and python_version < "3.12"
 yarl==1.9.6 ; python_version >= "3.11" and python_version < "3.12"
 zipp==3.20.1 ; python_version >= "3.11" and python_version < "3.12"
+
+aiomysql==0.2.0 ; python_version >= "3.11" and python_version < "3.12"
+pymysql==1.1.1 ; python_version >= "3.11" and python_version < "3.12"
+pymongo==4.13.0 ; python_version >= "3.11" and python_version < "3.12"
