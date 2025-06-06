@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from app.scenario.routers import scenario
+from app.metadata.routers import metadata_router
 
 app = FastAPI()
 
-app.include_router(scenario.router)
+app.include_router(metadata_router.router)
