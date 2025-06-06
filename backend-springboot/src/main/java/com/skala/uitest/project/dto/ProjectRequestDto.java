@@ -1,13 +1,12 @@
-package com.skala.uitest.backend_springboot.dto;
+package com.skala.uitest.project.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ProjectRequestDto {
+    private Long projectId;
     private String projectName;
     private String projectCode;
 }

@@ -1,7 +1,8 @@
 package com.skala.uitest.backend_springboot;
 
-import com.skala.uitest.backend_springboot.domain.Project;
-import com.skala.uitest.backend_springboot.repository.ProjectRepository;
+import com.skala.uitest.project.domain.Project;
+import com.skala.uitest.project.repository.ProjectRepository;
+
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.skala.uitest.backend_springboot.domain;
+package com.skala.uitest.project.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
