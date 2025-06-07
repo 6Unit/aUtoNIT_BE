@@ -2,6 +2,8 @@ package com.skala.uitest.testcase.controller;
 
 import com.skala.uitest.testcase.dto.TestCaseDto;
 import com.skala.uitest.testcase.service.TestCaseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,35 +12,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/testcase")
 @RequiredArgsConstructor
+@Tag(name = "TestCase API", description = "테스트케이스 관리 API")
 public class TestCaseController {
 
     private final TestCaseService testCaseService;
 
-    // 전체 시나리오 대상 생성
+    @Operation(summary = "테스트케이스 저장", description = "FastAPI에서 생성된 테스트케이스들을 저장합니다.")
     @PostMapping
-    public void createAll(@RequestBody List<TestCaseDto> dtos) {
-        testCaseService.createTestCasesBulk(dtos);
+    public void saveTestCases(@RequestBody List<TestCaseDto> dtos) {
+        testCaseService.saveTestCases(dtos);
     }
 
-    // 특정 시나리오에 대한 일부 생성
-    @PostMapping("/sub")
-    public void createSub(@RequestParam String scenarioId, @RequestBody List<TestCaseDto> dtos) {
-        testCaseService.createTestCasesByScenario(dtos, scenarioId);
-    }
-
-    // 시나리오별 조회
+    @Operation(summary = "테스트케이스 목록 조회", description = "시나리오 ID 기준으로 테스트케이스 목록을 조회합니다.")
     @GetMapping
     public List<TestCaseDto> getByScenario(@RequestParam String scenarioId) {
         return testCaseService.getTestCasesByScenario(scenarioId);
     }
 
-    // 단건 수정
+    @Operation(summary = "테스트케이스 수정", description = "테스트케이스 ID를 기준으로 단일 항목을 수정합니다.")
     @PatchMapping("/{id}")
     public void update(@PathVariable String id, @RequestBody TestCaseDto dto) {
         testCaseService.updateTestCase(id, dto);
     }
 
-    // 단건 삭제
+    @Operation(summary = "테스트케이스 삭제", description = "테스트케이스 ID를 기준으로 단일 항목을 삭제합니다.")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id) {
         testCaseService.deleteTestCase(id);
