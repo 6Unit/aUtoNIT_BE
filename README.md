@@ -3,6 +3,9 @@
 ## 실행 방법
 `docker-compose up -d`
 
+## 재빌드
+`docker-compose up --build -d`
+
 ### FastAPI - MariaDB 연동 테스트
 .env 설정 후, `python app/test_db.py` 실행    
 "✅ MariaDB 연결 성공: 1" 이 출력되면 OK   
