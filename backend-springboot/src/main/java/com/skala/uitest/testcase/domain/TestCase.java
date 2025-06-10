@@ -1,12 +1,14 @@
 package com.skala.uitest.testcase.domain;
 
+import com.skala.uitest.scenario.domain.Scenario;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,20 +18,21 @@ public class TestCase {
     @Column(name = "testcase_id", length = 45, nullable = false)
     private String testcaseId;
 
-    @Column(name = "scenario_id", length = 45, nullable = false)
-    private String scenarioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scenario_id", nullable = false)
+    private Scenario scenario;
 
     @Column(name = "testcase_name", length = 100, nullable = false)
     private String testcaseName;
 
-    @Column(name = "testcase_pre_flow", columnDefinition = "TEXT")
-    private String testcasePreFlow;
+    @Column(name = "pre_condition", columnDefinition = "TEXT")
+    private String preCondition;
 
-    @Column(name = "testcase_input_data", length = 200, nullable = false)
-    private String testcaseInputData;
+    @Column(name = "input_data", length = 200, nullable = false)
+    private String inputData;
 
-    @Column(name = "testcase_expected", columnDefinition = "TEXT", nullable = false)
-    private String testcaseExpected;
+    @Column(name = "expected_result", columnDefinition = "TEXT", nullable = false)
+    private String expectedResult;
 
     @Column(name = "is_success")
     private Boolean isSuccess;

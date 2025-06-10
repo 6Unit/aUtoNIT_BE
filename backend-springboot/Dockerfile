@@ -17,6 +17,5 @@ WORKDIR /app
 
 # 빌드된 JAR 복사
 COPY --from=build /app/target/*.jar app.jar
-
-# 앱 실행
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY src/main/resources/application.yaml application.yaml
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/application.yaml"]
