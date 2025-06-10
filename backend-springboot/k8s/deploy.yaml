@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend-springboot
-          image: ${DOCKER_HUB_IMG}
+          image: seyoon93/backend-springboot:latest
           ports:
             - containerPort: 8080
           env:
