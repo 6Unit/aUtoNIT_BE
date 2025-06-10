@@ -17,14 +17,14 @@ spec:
               service:
                 name: backend-service
                 port:
-                  number: 8080
+                  number: 8088
           - path: /swagger
             pathType: Prefix
             backend:
               service:
                 name: backend-service
                 port:
-                  number: 8080
+                  number: 8088
 
   # tls:
   #   - hosts:
