@@ -19,7 +19,7 @@ spec:
                 port:
                   number: 8080
           - path: /swagger-ui.html
-            pathType: Prefix
+            pathType: Exact
             backend:
               service:
                 name: backend-service
