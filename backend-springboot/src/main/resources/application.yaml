@@ -17,5 +17,5 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
-  file:
-    upload-dir: /data/upload
+file:
+  upload-dir: /data/upload
