@@ -26,6 +26,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./backend-springboot
+        file: ./backend-springboot/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/backend-springboot:latest
