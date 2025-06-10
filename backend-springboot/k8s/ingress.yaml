@@ -3,8 +3,6 @@ kind: Ingress
 metadata:
   name: backend-ingress
   namespace: sk-team-06
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
   # annotations:
   #   cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
