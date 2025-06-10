@@ -26,23 +26,6 @@ public class ProjectController {
         return projectService.createProject(dto);
     }
 
-    @PostMapping("/{id}/upload")
-    @Operation(summary = "요구사항 + 소스코드 ZIP 업로드", description = "특정 프로젝트에 대한 요구사항 정의서 엑셀 및 소스코드 ZIP 파일 업로드")
-    public ResponseEntity<String> uploadProjectFiles(
-            @PathVariable("id") Long projectId,
-            @RequestParam("requirement") MultipartFile requirementFile,
-            @RequestParam("sourceZip") MultipartFile sourceZipFile
-    ) {
-        try {
-            projectService.handleProjectFileUpload(projectId, requirementFile, sourceZipFile);
-            return ResponseEntity.ok("파일 업로드 성공");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("파일 업로드 실패: " + e.getMessage());
-        }
-    }
-
     @GetMapping("/{id}/status")
     @Operation(summary = "프로젝트 상태 확인", description = "업로드/시나리오/테스트케이스 생성 상태 확인")
     public ResponseEntity<?> getProjectStatus(@PathVariable("id") Long id) {

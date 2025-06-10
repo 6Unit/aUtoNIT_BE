@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-springboot
+  namespace: sk-team-06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-springboot
+  template:
+    metadata:
+      labels:
+        app: backend-springboot
+    spec:
+      containers:
+        - name: backend
+          image: seyoon93/backend-springboot:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mariadb://mariadb-1.mariadb:3306/sk-team-06
+            - name: SPRING_DATASOURCE_USERNAME
+              value: skala_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: password

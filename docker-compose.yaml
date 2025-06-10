@@ -22,30 +22,10 @@ services:
     depends_on:
       - mariadb
     volumes:
-      - metadata_volume:/data/metadata 
+      - upload_volume:/data/upload 
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-
-  # mongodb:
-  #   image: mongo:5
-  #   container_name: mongodb
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - mongodb_data:/data/db
-
-  # fastapi:
-  #   build: ./ai-fastapi
-  #   container_name: fastapi
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./ai-fastapi:/app   # ✅ 로컬 코드 실시간 반영
-  #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-  #   depends_on:
-  #     - mariadb
-  #     - mongodb
+      - file.upload-dir=/data/upload
 
 volumes:
   mariadb_data:
-  metadata_volume:
+  upload_volume:
