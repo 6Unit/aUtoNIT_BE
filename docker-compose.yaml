@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:10.7
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: test_auto
+      MYSQL_USER: skala_user
+      MYSQL_PASSWORD: skalapass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  backend-springboot:
+    build: ./backend-springboot
+    container_name: backend-springboot
+    ports:
+      - "8088:8080"
+    depends_on:
+      - mariadb
+    volumes:
+      - upload_volume:/data/upload
+    environment:
+      - file.upload-dir=/data/upload
+
+
+volumes:
+  mariadb_data:
+  upload_volume:
+  
+
