@@ -19,4 +19,3 @@ spring:
         dialect: org.hibernate.dialect.MariaDBDialect
   file:
     upload-dir: /data/upload
-    
