@@ -5,7 +5,7 @@ services:
     image: mariadb:10.7
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 0000
       MYSQL_DATABASE: test_auto
       MYSQL_USER: skala_user
       MYSQL_PASSWORD: skalapass
@@ -30,5 +30,3 @@ services:
 volumes:
   mariadb_data:
   upload_volume:
-  
-
