@@ -18,5 +18,17 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
 
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  web:
+    resources:
+      add-mappings: false
+
+  springdoc:
+    swagger-ui:
+      path: /swagger
+
+
 file:
   upload-dir: /data/upload
