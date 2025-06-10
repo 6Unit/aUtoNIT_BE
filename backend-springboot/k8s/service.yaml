@@ -4,7 +4,7 @@ metadata:
   name: backend-service
   namespace: sk-team-06
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: backend-springboot
   ports:
