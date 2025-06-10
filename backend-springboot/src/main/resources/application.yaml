@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mariadb:3306/test_auto?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: skala_user
+    password: skalapass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    mongodb:
+      uri: mongodb://host.docker.internal:27017/test_auto
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+  file:
+    upload-dir: /data/upload
+    
