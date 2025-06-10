@@ -5,10 +5,6 @@ spring:
     password: skalapass
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  data:
-    mongodb:
-      uri: mongodb://host.docker.internal:27017/test_auto
-
   jpa:
     hibernate:
       ddl-auto: update

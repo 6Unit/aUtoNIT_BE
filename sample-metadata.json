@@ -1,0 +1,5 @@
+{
+  "components": [
+    { "id": "btn1", "type": "button", "label": "확인" }
+  ]
+}
