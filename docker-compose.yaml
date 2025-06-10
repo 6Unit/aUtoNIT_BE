@@ -5,7 +5,7 @@ services:
     image: mariadb:10.7
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 0000
       MYSQL_DATABASE: test_auto
       MYSQL_USER: skala_user
       MYSQL_PASSWORD: skalapass
@@ -14,14 +14,6 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
 
-  mongodb:
-    image: mongo:5
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-
   backend-springboot:
     build: ./backend-springboot
     container_name: backend-springboot
@@ -29,20 +21,31 @@ services:
       - "8088:8080"
     depends_on:
       - mariadb
-      - mongodb
-
-  fastapi:
-    build: ./ai-fastapi
-    container_name: fastapi
-    ports:
-      - "8000:8000"
     volumes:
-      - ./ai-fastapi:/app   # ✅ 로컬 코드 실시간 반영
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    depends_on:
-      - mariadb
-      - mongodb
+      - metadata_volume:/data/metadata 
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  # mongodb:
+  #   image: mongo:5
+  #   container_name: mongodb
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+
+  # fastapi:
+  #   build: ./ai-fastapi
+  #   container_name: fastapi
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./ai-fastapi:/app   # ✅ 로컬 코드 실시간 반영
+  #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  #   depends_on:
+  #     - mariadb
+  #     - mongodb
 
 volumes:
   mariadb_data:
-  mongodb_data:
+  metadata_volume:
