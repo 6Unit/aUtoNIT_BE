@@ -14,17 +14,41 @@ spec:
         app: backend-springboot
     spec:
       containers:
-        - name: backend
-          image: seyoon93/backend-springboot:latest
+        - name: backend-springboot
+          image: ${DOCKER_HUB_IMG}
           ports:
             - containerPort: 8080
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:mariadb://mariadb-1.mariadb:3306/sk-team-06
-            - name: SPRING_DATASOURCE_USERNAME
-              value: skala_user
-            - name: SPRING_DATASOURCE_PASSWORD
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_URL
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_USER
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mariadb-secret
-                  key: password
+                  name: db-secret
+                  key: DB_PASSWORD
+        
+          args:
+            - --spring.profiles.active=prod
