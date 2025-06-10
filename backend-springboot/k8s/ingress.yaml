@@ -4,7 +4,7 @@ metadata:
   name: backend-ingress
   namespace: sk-team-06
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /
   # annotations:
   #   cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
@@ -13,14 +13,14 @@ spec:
     - host: sk-autonit.skala25a.project.skala-ai.com
       http:
         paths:
-          - path: /api(/|$)(.*)
+          - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend-service
                 port:
                   number: 8080
-          - path: /swagger(/|$)(.*)
+          - path: /swagger
             pathType: Prefix
             backend:
               service:
