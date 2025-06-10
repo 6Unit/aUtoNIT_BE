@@ -12,10 +12,9 @@ RUN mvn clean package -DskipTests
 
 # 2단계: 실행용 JRE 이미지
 FROM eclipse-temurin:17-jre
-
 WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
 # 빌드된 JAR 복사
-COPY --from=build /app/target/*.jar app.jar
-COPY src/main/resources/application.yaml application.yaml
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/application.yaml"]
+COPY src/main/resources/ /app/config/
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/config/", "--spring.profiles.active=prod"]
