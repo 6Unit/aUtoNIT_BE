@@ -49,6 +49,13 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: DB_PASSWORD
-        
-          args:
-            - --spring.profiles.active=prod
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          volumeMounts:
+            - name: temp-storage # upload-volume
+              mountPath: /data/upload
+      volumes:
+        - name: temp-storage # upload-volume
+          emptyDir: {}  # 임시 저장소로 사용, Pod가 삭제되면 데이터도 삭제됨
+          # persistentVolumeClaim:
+          #   claimName: upload-pvc
