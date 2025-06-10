@@ -29,15 +29,16 @@ public class ScenarioController {
         scenarioService.saveScenario(dto);
     }
 
-    @Operation(summary = "시나리오 수정", description = "시나리오 ID를 기준으로 내용을 수정합니다.")
+    @Operation(summary = "시나리오 수정", description = "시나리오 ID를 기준으로 시나리오명 및 내용을 수정합니다.")
     @PutMapping("/{id}")
     public void updateScenario(@PathVariable String id, @RequestBody ScenarioDto dto) {
         scenarioService.updateScenario(id, dto);
     }
 
-    @Operation(summary = "시나리오 삭제", description = "시나리오 ID를 기준으로 삭제합니다.")
-    @DeleteMapping("/{id}")
-    public void deleteScenario(@PathVariable String id) {
-        scenarioService.deleteScenario(id);
+    @Operation(summary = "시나리오 삭제", description = "선택된 시나리오 ID 목록을 기준으로 삭제합니다.")
+    @DeleteMapping
+    public void deleteScenarios(@RequestBody List<String> ids) {
+        scenarioService.deleteScenarios(ids);
     }
+
 }

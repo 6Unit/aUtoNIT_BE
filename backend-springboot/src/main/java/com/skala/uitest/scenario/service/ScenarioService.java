@@ -48,7 +48,7 @@ public class ScenarioService {
         throw new IllegalArgumentException("해당 ID의 시나리오가 존재하지 않습니다: " + id);
     }
 
-    public void deleteScenario(String id) {
-        scenarioRepository.deleteById(id);
+    public void deleteScenarios(List<String> ids) {
+        scenarioRepository.deleteAllById(ids);
     }
 }

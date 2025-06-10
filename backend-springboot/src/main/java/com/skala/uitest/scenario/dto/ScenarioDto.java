@@ -4,6 +4,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.skala.uitest.project.domain.Project;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,4 +17,5 @@ public class ScenarioDto {
     private String scenarioName;
     private String scenarioDescription;
     private LocalDateTime createdAt;
+    private Project project;
 }

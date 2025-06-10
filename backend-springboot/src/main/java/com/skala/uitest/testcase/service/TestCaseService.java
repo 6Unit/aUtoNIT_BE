@@ -1,5 +1,6 @@
 package com.skala.uitest.testcase.service;
 
+import com.skala.uitest.scenario.repository.ScenarioRepository;
 import com.skala.uitest.testcase.domain.TestCase;
 import com.skala.uitest.testcase.dto.TestCaseDto;
 import com.skala.uitest.testcase.repository.TestCaseRepository;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class TestCaseService {
 
     private final TestCaseRepository testCaseRepository;
+    private final ScenarioRepository scenarioRepository;
 
     // ✅ 저장 (FastAPI 생성 결과 저장)
     public List<TestCase> saveTestCases(List<TestCaseDto> dtos) {
@@ -26,7 +28,7 @@ public class TestCaseService {
 
     // ✅ 시나리오별 조회
     public List<TestCaseDto> getTestCasesByScenario(String scenarioId) {
-        return testCaseRepository.findAllByScenarioId(scenarioId).stream()
+        return testCaseRepository.findAllByScenario_ScenarioId(scenarioId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -38,9 +40,9 @@ public class TestCaseService {
 
         TestCase tc = optional.get();
         tc.setTestcaseName(dto.getTestcaseName());
-        tc.setTestcasePreFlow(dto.getTestcasePreFlow());
-        tc.setTestcaseInputData(dto.getTestcaseInputData());
-        tc.setTestcaseExpected(dto.getTestcaseExpected());
+        tc.setPreCondition(dto.getPreCondition());
+        tc.setInputData(dto.getInputData());
+        tc.setExpectedResult(dto.getExpectedResult());
         tc.setIsSuccess(dto.getIsSuccess());
         return testCaseRepository.save(tc);
     }
@@ -50,29 +52,29 @@ public class TestCaseService {
         testCaseRepository.deleteById(id);
     }
 
-    // DTO → Entity 클라이언트가 보낸 데이터를 DB 저장용 객체(Entity) 로 변환하는 함수
+    // DTO → Entity
     private TestCase toEntity(TestCaseDto dto) {
         return TestCase.builder()
                 .testcaseId(dto.getTestcaseId())
-                .scenarioId(dto.getScenarioId())
+                .scenario(scenarioRepository.getReferenceById(dto.getScenarioId()))
                 .testcaseName(dto.getTestcaseName())
-                .testcasePreFlow(dto.getTestcasePreFlow())
-                .testcaseInputData(dto.getTestcaseInputData())
-                .testcaseExpected(dto.getTestcaseExpected())
+                .preCondition(dto.getPreCondition())
+                .inputData(dto.getInputData())
+                .expectedResult(dto.getExpectedResult())
                 .isSuccess(dto.getIsSuccess())
                 .createdAt(dto.getCreatedAt())
                 .build();
     }
 
-    // Entity → DTO DB에서 꺼낸 Entity를 클라이언트에 응답할 수 있는 형태(DTO) 로 변환하는 함수
+    // Entity → DTO
     private TestCaseDto toDto(TestCase tc) {
         return TestCaseDto.builder()
                 .testcaseId(tc.getTestcaseId())
-                .scenarioId(tc.getScenarioId())
+                .scenarioId(tc.getScenario().getScenarioId())
                 .testcaseName(tc.getTestcaseName())
-                .testcasePreFlow(tc.getTestcasePreFlow())
-                .testcaseInputData(tc.getTestcaseInputData())
-                .testcaseExpected(tc.getTestcaseExpected())
+                .preCondition(tc.getPreCondition())
+                .inputData(tc.getInputData())
+                .expectedResult(tc.getExpectedResult())
                 .isSuccess(tc.getIsSuccess())
                 .createdAt(tc.getCreatedAt())
                 .build();
