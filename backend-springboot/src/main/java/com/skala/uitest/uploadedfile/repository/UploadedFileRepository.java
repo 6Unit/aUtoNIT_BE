@@ -13,6 +13,8 @@ public interface UploadedFileRepository extends JpaRepository<UploadedFile, Stri
     boolean existsByProject_ProjectIdAndFileType(Long projectId, FileType fileType);
 
     Optional<UploadedFile> findByProjectAndFileType(Project project, FileType fileType);
+    Optional<UploadedFile> findByProject_ProjectIdAndFileType(Long projectId, FileType fileType);
+
     // 필요 시: 전체 파일 목록 조회 (옵션)
     List<UploadedFile> findAllByProject_ProjectId(Long projectId);
 }
