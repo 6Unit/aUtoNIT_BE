@@ -1,10 +1,15 @@
 package com.skala.uitest.testcase.controller;
 
+import com.skala.uitest.testcase.dto.TestCaseDetailDto;
 import com.skala.uitest.testcase.dto.TestCaseDto;
+import com.skala.uitest.testcase.dto.TestCaseListDto;
+import com.skala.uitest.testcase.dto.TestCaseUpdateRequestDto;
 import com.skala.uitest.testcase.service.TestCaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +29,24 @@ public class TestCaseController {
     }
 
     @Operation(summary = "테스트케이스 목록 조회", description = "시나리오 ID 기준으로 테스트케이스 목록을 조회합니다.")
-    @GetMapping
-    public List<TestCaseDto> getByScenario(@RequestParam String scenarioId) {
+    @GetMapping("/scenario/{scenarioId}")
+    public List<TestCaseListDto> getByScenario(@PathVariable String scenarioId) {
         return testCaseService.getTestCasesByScenario(scenarioId);
     }
 
+
+    @Operation(summary = "테스트케이스 단건 조회", description = "테스트케이스 ID 기준으로 주요 정보를 조회합니다.")
+    @GetMapping("/{id}")
+    public TestCaseDetailDto getOne(@PathVariable String id) {
+        return testCaseService.getTestCaseDetailById(id);
+    }
+
+
     @Operation(summary = "테스트케이스 수정", description = "테스트케이스 ID를 기준으로 단일 항목을 수정합니다.")
-    @PatchMapping("/{id}")
-    public void update(@PathVariable String id, @RequestBody TestCaseDto dto) {
-        testCaseService.updateTestCase(id, dto);
+    @PutMapping("/{id}")
+    public ResponseEntity<TestCaseUpdateRequestDto> update(@PathVariable String id, @RequestBody TestCaseUpdateRequestDto dto) {
+        TestCaseUpdateRequestDto updated = testCaseService.updateTestCase(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(summary = "테스트케이스 삭제", description = "테스트케이스 ID를 기준으로 단일 항목을 삭제합니다.")

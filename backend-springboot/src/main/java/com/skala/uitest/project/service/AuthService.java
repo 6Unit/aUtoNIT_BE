@@ -14,7 +14,7 @@ public class AuthService {
 
     public ProjectLoginResponseDto login(ProjectLoginRequestDto dto) {
         boolean exists = projectRepository
-                .findByProjectIdAndProjectCode(dto.getProjectId(), dto.getProjectCode())
+                .findByProjectNameAndProjectCode(dto.getProjectName(), dto.getProjectCode())
                 .isPresent();
 
         if (exists) {

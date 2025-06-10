@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProjectLoginRequestDto {
-    private Long projectId;
+    private String projectName;
     private String projectCode;
 }

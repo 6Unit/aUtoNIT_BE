@@ -25,8 +25,8 @@ public class TestCase {
     @Column(name = "testcase_name", length = 100, nullable = false)
     private String testcaseName;
 
-    @Column(name = "pre_condition", columnDefinition = "TEXT")
-    private String preCondition;
+    @Column(name = "ui_flow", columnDefinition = "TEXT")
+    private String uiFlow;
 
     @Column(name = "input_data", length = 200, nullable = false)
     private String inputData;

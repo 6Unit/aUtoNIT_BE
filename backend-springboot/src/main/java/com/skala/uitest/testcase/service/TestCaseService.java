@@ -1,8 +1,12 @@
 package com.skala.uitest.testcase.service;
 
+import jakarta.transaction.Transactional;
 import com.skala.uitest.scenario.repository.ScenarioRepository;
 import com.skala.uitest.testcase.domain.TestCase;
+import com.skala.uitest.testcase.dto.TestCaseDetailDto;
 import com.skala.uitest.testcase.dto.TestCaseDto;
+import com.skala.uitest.testcase.dto.TestCaseListDto;
+import com.skala.uitest.testcase.dto.TestCaseUpdateRequestDto;
 import com.skala.uitest.testcase.repository.TestCaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,25 +30,43 @@ public class TestCaseService {
         return testCaseRepository.saveAll(entities);
     }
 
-    // ✅ 시나리오별 조회
-    public List<TestCaseDto> getTestCasesByScenario(String scenarioId) {
+    // ✅ 시나리오별 조회 (테스트케이스 ID + 이름만 반환)
+    public List<TestCaseListDto> getTestCasesByScenario(String scenarioId) {
         return testCaseRepository.findAllByScenario_ScenarioId(scenarioId).stream()
-                .map(this::toDto)
+                .map(tc -> TestCaseListDto.builder()
+                        .testcaseId(tc.getTestcaseId())
+                        .testcaseName(tc.getTestcaseName())
+                        .build())
                 .collect(Collectors.toList());
     }
 
-    // ✅ 단건 수정
-    public TestCase updateTestCase(String id, TestCaseDto dto) {
-        Optional<TestCase> optional = testCaseRepository.findById(id);
-        if (optional.isEmpty()) throw new IllegalArgumentException("해당 ID 없음: " + id);
+    // ✅ 단건 조회
+    @Transactional
+    public TestCaseDetailDto getTestCaseDetailById(String id) {
+        TestCase tc = testCaseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 테스트케이스 없음: " + id));
+        return TestCaseDetailDto.builder()
+                .testcaseId(tc.getTestcaseId())
+                .testcaseName(tc.getTestcaseName())
+                .uiFlow(tc.getUiFlow())
+                .inputData(tc.getInputData())
+                .expectedResult(tc.getExpectedResult())
+                .build();
+    }
 
-        TestCase tc = optional.get();
+
+    // ✅ 단건 수정
+    public TestCaseUpdateRequestDto updateTestCase(String id, TestCaseUpdateRequestDto dto) {
+        TestCase tc = testCaseRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID 없음: " + id));
+    
         tc.setTestcaseName(dto.getTestcaseName());
-        tc.setPreCondition(dto.getPreCondition());
+        tc.setUiFlow(dto.getUiFlow());
         tc.setInputData(dto.getInputData());
         tc.setExpectedResult(dto.getExpectedResult());
-        tc.setIsSuccess(dto.getIsSuccess());
-        return testCaseRepository.save(tc);
+    
+        TestCase updated = testCaseRepository.save(tc);
+        return TestCaseUpdateRequestDto.fromEntity(updated); // ✅ Dto로 변환해서 반환
     }
 
     // ✅ 삭제
@@ -58,7 +80,7 @@ public class TestCaseService {
                 .testcaseId(dto.getTestcaseId())
                 .scenario(scenarioRepository.getReferenceById(dto.getScenarioId()))
                 .testcaseName(dto.getTestcaseName())
-                .preCondition(dto.getPreCondition())
+                .uiFlow(dto.getUiFlow())
                 .inputData(dto.getInputData())
                 .expectedResult(dto.getExpectedResult())
                 .isSuccess(dto.getIsSuccess())
@@ -72,7 +94,7 @@ public class TestCaseService {
                 .testcaseId(tc.getTestcaseId())
                 .scenarioId(tc.getScenario().getScenarioId())
                 .testcaseName(tc.getTestcaseName())
-                .preCondition(tc.getPreCondition())
+                .uiFlow(tc.getUiFlow())
                 .inputData(tc.getInputData())
                 .expectedResult(tc.getExpectedResult())
                 .isSuccess(tc.getIsSuccess())
