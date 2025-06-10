@@ -11,7 +11,7 @@ spec:
   source:
     path: backend-springboot/k8s
     repoURL: https://github.com/6Unit/aUtoNIT_BE
-    targetRevision: 
+    targetRevision: dev
   syncPolicy:
     automated:
       prune: true

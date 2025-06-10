@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://mariadb:3306/test_auto?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    url: jdbc:mariadb://mariadb:3306/test_auto?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     username: skala_user
     password: skalapass
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.mariadb.jdbc.Driver 
 
   data:
     mongodb:
@@ -17,5 +17,6 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
+
   file:
     upload-dir: /data/upload
