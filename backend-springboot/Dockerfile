@@ -17,4 +17,4 @@ COPY --from=build /app/target/*.jar app.jar
 
 # 빌드된 JAR 복사
 COPY src/main/resources/ /app/config/
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/config/"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/app/config/", "--spring.profiles.active=prod"]
