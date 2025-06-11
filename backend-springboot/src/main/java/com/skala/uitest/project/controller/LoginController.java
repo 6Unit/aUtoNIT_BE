@@ -17,7 +17,7 @@ public class LoginController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    @Operation(summary = "프로젝트 로그인", description = "프로젝트 ID와 코드를 사용하여 로그인")
+    @Operation(summary = "프로젝트 로그인", description = "프로젝트명과 코드를 사용하여 로그인")
     public ProjectLoginResponseDto login(@RequestBody ProjectLoginRequestDto dto) {
         return authService.login(dto);
     }
