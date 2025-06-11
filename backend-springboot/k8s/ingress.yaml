@@ -3,8 +3,8 @@ kind: Ingress
 metadata:
   name: backend-ingress
   namespace: sk-team-06
-  # annotations:
-  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: public-nginx
   rules:
@@ -26,7 +26,7 @@ spec:
                 port:
                   number: 8080
 
-  # tls:
-  #   - hosts:
-  #       - sk-autonit.skala25a.project.skala-ai.com
-  #     secretName: sk-autonit-tls
+  tls:
+    - hosts:
+        - sk-autonit.skala25a.project.skala-ai.com
+      secretName: sk-autonit-tls
