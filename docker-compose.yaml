@@ -24,6 +24,9 @@ services:
     volumes:
       - upload_volume:/data/upload
     environment:
+      - LOCAL_DB_URL=jdbc:mysql://mariadb:3306/test_auto?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      - LOCAL_DB_USER=skala_user
+      - LOCAL_DB_PASSWORD=skalapass
       - file.upload-dir=/data/upload
 
 

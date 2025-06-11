@@ -3,6 +3,7 @@ package com.skala.uitest.uploadedfile.controller;
 import com.skala.uitest.project.domain.Project;
 import com.skala.uitest.project.repository.ProjectRepository;
 import com.skala.uitest.uploadedfile.domain.UploadedFile;
+import com.skala.uitest.uploadedfile.dto.UploadedFileResponseDto;
 import com.skala.uitest.uploadedfile.enums.FileType;
 import com.skala.uitest.uploadedfile.repository.UploadedFileRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,38 +48,36 @@ public class UploadedFileController {
     }
 
     @Operation(summary = "프로젝트 파일 업로드", description = "요구사항 엑셀, 소스 ZIP, (선택) 검증 파일 업로드")
-    @PostMapping(
-        path = "/{id}/upload",
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
+    @PostMapping(path = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<?> uploadFiles(
             @PathVariable("id") Long projectId,
-
-            @Parameter(description = "요구사항 엑셀 파일", required = true)
             @RequestParam("requirement") MultipartFile requirement,
-
-            @Parameter(description = "소스 코드 ZIP 파일", required = true)
             @RequestParam("source") MultipartFile source,
-
-            @Parameter(description = "검증용 파일 (선택)", required = false)
             @RequestParam(value = "validation", required = false) MultipartFile validation
     ) throws IOException {
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        saveOrUpdateUploadedFile(requirement, FileType.REQUIREMENT, project);
-        saveOrUpdateUploadedFile(source, FileType.SOURCE, project);
+        List<UploadedFileResponseDto> uploadedFiles = new ArrayList<>();
+
+        uploadedFiles.add(saveOrUpdateUploadedFile(requirement, FileType.REQUIREMENT, project));
+        uploadedFiles.add(saveOrUpdateUploadedFile(source, FileType.SOURCE, project));
 
         if (validation != null && !validation.isEmpty()) {
-            saveOrUpdateUploadedFile(validation, FileType.VALIDATION, project);
+            uploadedFiles.add(saveOrUpdateUploadedFile(validation, FileType.VALIDATION, project));
         }
 
-        return ResponseEntity.ok().body("파일 업로드 성공");
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "파일 업로드 성공");
+        response.put("files", uploadedFiles);
+
+        return ResponseEntity.ok(response);
     }
 
-    private void saveOrUpdateUploadedFile(MultipartFile file, FileType type, Project project) throws IOException {
+
+    private UploadedFileResponseDto saveOrUpdateUploadedFile(MultipartFile file, FileType type, Project project) throws IOException {
         String dirPath = uploadDir + "/" + project.getProjectId() + "/";
         File dir = new File(dirPath);
         if (!dir.exists()) dir.mkdirs();
@@ -96,5 +99,8 @@ public class UploadedFileController {
         fileEntity.setUploadedAt(LocalDateTime.now());
 
         uploadedFileRepository.save(fileEntity);
+
+        return new UploadedFileResponseDto(type, file.getOriginalFilename());
     }
+
 }
