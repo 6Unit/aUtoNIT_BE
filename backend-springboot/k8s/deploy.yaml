@@ -17,7 +17,7 @@ spec:
         - name: backend-springboot
           image: seyoon93/backend-springboot:latest
           ports:
-            - containerPort: 8088
+            - containerPort: 8080
           env:
             - name: DB_URL
               valueFrom:
