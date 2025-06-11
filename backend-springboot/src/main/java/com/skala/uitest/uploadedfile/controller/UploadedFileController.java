@@ -76,14 +76,47 @@ public class UploadedFileController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}/files/{fileType}")
+    @Operation(summary = "업로드된 파일 다운로드", description = "프로젝트 ID와 파일 타입으로 업로드된 파일을 조회합니다.")
+    public ResponseEntity<?> downloadFile(
+            @PathVariable("id") Long projectId,
+            @PathVariable("fileType") FileType fileType
+    ) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        UploadedFile fileEntity = uploadedFileRepository.findByProjectAndFileType(project, fileType)
+                .orElseThrow(() -> new RuntimeException("파일이 존재하지 않습니다: " + fileType));
+
+        File file = new File(fileEntity.getFilePath());
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            byte[] fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header("Content-Disposition", "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+                    .body(fileBytes);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("파일을 읽는 도중 오류가 발생했습니다.");
+        }
+    }
+
 
     private UploadedFileResponseDto saveOrUpdateUploadedFile(MultipartFile file, FileType type, Project project) throws IOException {
-        String dirPath = uploadDir + "/" + project.getProjectId() + "/";
+        // 저장 경로 조합 코드
+        String dirPath = uploadDir + "/" + project.getProjectId() + "/"; // 예: /data/upload/1
         File dir = new File(dirPath);
         if (!dir.exists()) dir.mkdirs();
 
-        String storedFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        String fullPath = dirPath + storedFileName;
+        // 저장 파일 이름
+        String storedFileName = UUID.randomUUID() + "_" + file.getOriginalFilename(); // 예: f8c0a18e-12ab-4939-b123-dbd1234abcde_spec.xlsx
+        
+        // 최종 경로 
+        String fullPath = dirPath + storedFileName; // 예: /data/upload/1/f8c0a18e-12ab-4939-b123-dbd1234abcde_spec.xlsx
         file.transferTo(new File(fullPath));
 
         Optional<UploadedFile> existing = uploadedFileRepository.findByProjectAndFileType(project, type);
