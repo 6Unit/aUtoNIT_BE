@@ -35,7 +35,7 @@ public class ScenarioController {
         return scenarioService.getScenariosByProjectId(projectId);
     }
 
-    @Operation(summary = "시나리오 자동 생성", description = "요구사항 기반으로 시나리오 리스트 생성 (LLM 호출)")
+    @Operation(summary = "시나리오 생성 요청", description = "요구사항 기반으로 시나리오 리스트 생성 (LLM 호출)")
     @PostMapping("/generate")
     public List<ScenarioDto> generateScenarios(@RequestParam("projectId") Long projectId) {
         return scenarioService.generateScenarios(projectId);
