@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScenarioRepository extends JpaRepository<Scenario, String> {
     List<Scenario> findAllByProject_ProjectId(Long projectId);
+    long countByProject_ProjectId(Long projectId);
 }

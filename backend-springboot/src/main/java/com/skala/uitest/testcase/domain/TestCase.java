@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -39,4 +40,11 @@ public class TestCase {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void generateId() {
+        if (this.testcaseId == null) {
+            this.testcaseId = "tc-" + UUID.randomUUID().toString().substring(0, 8);
+        }
+    }
 }

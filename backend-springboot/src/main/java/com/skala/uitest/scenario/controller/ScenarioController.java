@@ -1,16 +1,23 @@
 package com.skala.uitest.scenario.controller;
 
+import com.skala.uitest.project.domain.Project;
+import com.skala.uitest.scenario.domain.Scenario;
 import com.skala.uitest.scenario.dto.ScenarioDto;
-import com.skala.uitest.scenario.dto.ScenarioUpdateRequestDto;
+import com.skala.uitest.scenario.dto.ScenarioRequestDto;
 import com.skala.uitest.scenario.service.ScenarioService;
+import com.skala.uitest.project.repository.ProjectRepository;
+import com.skala.uitest.scenario.repository.ScenarioRepository;
+
+import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/scenario")
@@ -19,6 +26,8 @@ import java.util.List;
 public class ScenarioController {
 
     private final ScenarioService scenarioService;
+    private final ScenarioRepository ScenarioRepository;
+    private final ProjectRepository ProjectRepository;
 
     @Operation(summary = "프로젝트별 시나리오 조회", description = "특정 프로젝트에 속한 시나리오 리스트를 조회합니다.")
     @GetMapping("/{projectId}")
@@ -32,14 +41,22 @@ public class ScenarioController {
         return scenarioService.generateScenarios(projectId);
     }
 
+    @Operation(summary = "시나리오 단일 추가", description = "특정 프로젝트에 시나리오를 수동 생성합니다.")
+    @PostMapping("/{projectId}")
+    public ResponseEntity<ScenarioDto> createScenario(
+            @PathVariable Long projectId,
+            @RequestBody ScenarioRequestDto dto) {
+
+        ScenarioDto saved = scenarioService.createScenario(projectId, dto); 
+        return ResponseEntity.ok(saved);
+    }
 
     @Operation(summary = "시나리오 수정", description = "시나리오 ID를 기준으로 시나리오명 및 내용을 수정합니다.")
     @PutMapping("/{id}")
-    public ResponseEntity<ScenarioDto> updateScenario(@PathVariable String id, @RequestBody ScenarioUpdateRequestDto dto) {
+    public ResponseEntity<ScenarioDto> updateScenario(@PathVariable String id, @RequestBody ScenarioRequestDto dto) {
         ScenarioDto updated = scenarioService.updateScenario(id, dto);
         return ResponseEntity.ok(updated);
     }
-
 
     @DeleteMapping("/{id}")
     @Operation(summary = "시나리오 삭제", description = "시나리오 ID를 기준으로 삭제합니다.")
@@ -47,5 +64,4 @@ public class ScenarioController {
         scenarioService.deleteScenarios(id);
         return ResponseEntity.ok().build();
     }
-
 }

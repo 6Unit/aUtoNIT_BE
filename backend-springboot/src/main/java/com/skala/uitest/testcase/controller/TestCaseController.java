@@ -1,5 +1,7 @@
 package com.skala.uitest.testcase.controller;
 
+import com.skala.uitest.scenario.dto.ScenarioDto;
+import com.skala.uitest.testcase.dto.TestCaseCreateRequestDto;
 import com.skala.uitest.testcase.dto.TestCaseDetailDto;
 import com.skala.uitest.testcase.dto.TestCaseDto;
 import com.skala.uitest.testcase.dto.TestCaseListDto;
@@ -41,7 +43,16 @@ public class TestCaseController {
         return testCaseService.getTestCaseDetailById(id);
     }
 
-
+    @Operation(summary = "테스트케이스 단일 추가", description = "특정 시나리오에 단일 테스트케이스를 추가합니다.")
+    @PostMapping("/{scenarioId}")
+    public ResponseEntity<TestCaseDto> createTestCase(
+            @PathVariable String scenarioId,
+            @RequestBody TestCaseCreateRequestDto dto) {
+        
+        TestCaseDto saved = testCaseService.createTestCaseFromScenario(scenarioId, dto);
+        return ResponseEntity.ok(saved);
+    }
+    
     @Operation(summary = "테스트케이스 수정", description = "테스트케이스 ID를 기준으로 단일 항목을 수정합니다.")
     @PutMapping("/{id}")
     public ResponseEntity<TestCaseUpdateRequestDto> update(@PathVariable String id, @RequestBody TestCaseUpdateRequestDto dto) {
