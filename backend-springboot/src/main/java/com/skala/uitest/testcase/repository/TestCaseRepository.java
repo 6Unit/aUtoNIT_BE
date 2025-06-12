@@ -13,5 +13,5 @@ public interface TestCaseRepository extends JpaRepository<TestCase, String> {
 
     // ✅ 연관 관계 기반 자동 쿼리
     List<TestCase> findAllByScenario_ScenarioId(String scenarioId);
-
+    long countByScenario_ScenarioId(String scenarioId);
 }

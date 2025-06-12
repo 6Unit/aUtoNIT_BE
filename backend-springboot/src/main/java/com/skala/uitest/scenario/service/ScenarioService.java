@@ -7,8 +7,10 @@ import com.skala.uitest.project.enums.FileType;
 import com.skala.uitest.project.repository.UploadedFileRepository;
 import com.skala.uitest.scenario.domain.Scenario;
 import com.skala.uitest.scenario.dto.ScenarioDto;
-import com.skala.uitest.scenario.dto.ScenarioUpdateRequestDto;
+import com.skala.uitest.scenario.dto.ScenarioRequestDto;
 import com.skala.uitest.scenario.repository.ScenarioRepository;
+import com.skala.uitest.project.domain.Project;
+import com.skala.uitest.project.repository.ProjectRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScenarioService {
 
+    private final ProjectRepository projectRepository;
     private final ScenarioRepository scenarioRepository;
     private final UploadedFileRepository fileRepository;
     private final RestTemplate restTemplate;
@@ -77,8 +81,27 @@ public class ScenarioService {
         return scenarios;
     }
     
+    // 단일 시나리오 수동 생성
+    public ScenarioDto createScenario(Long projectId, ScenarioRequestDto dto) {
+    Project project = projectRepository.findById(projectId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트 ID가 존재하지 않습니다: " + projectId));
+
+    long count = scenarioRepository.countByProject_ProjectId(projectId);  // 프로젝트별 시나리오 수
+    String scenarioId = String.format("scn-%03d", count + 1);  // scn-001, scn-002 ...
+
+    Scenario entity = Scenario.builder()
+        .scenarioId(scenarioId)
+        .scenarioName(dto.getScenarioName())
+        .scenarioDescription(dto.getScenarioDescription())
+        .createdAt(LocalDateTime.now())
+        .project(project)
+        .build();
+
+    return ScenarioDto.fromEntity(scenarioRepository.save(entity));
+    }
+
     // 단일 시나리오 수정
-    public ScenarioDto updateScenario(String id, ScenarioUpdateRequestDto dto) {
+    public ScenarioDto updateScenario(String id, ScenarioRequestDto dto) {
         Scenario scenario = scenarioRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("시나리오를 찾을 수 없습니다."));
     

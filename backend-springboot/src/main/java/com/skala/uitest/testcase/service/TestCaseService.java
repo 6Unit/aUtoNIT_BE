@@ -1,8 +1,11 @@
 package com.skala.uitest.testcase.service;
 
 import jakarta.transaction.Transactional;
+
+import com.skala.uitest.scenario.domain.Scenario;
 import com.skala.uitest.scenario.repository.ScenarioRepository;
 import com.skala.uitest.testcase.domain.TestCase;
+import com.skala.uitest.testcase.dto.TestCaseCreateRequestDto;
 import com.skala.uitest.testcase.dto.TestCaseDetailDto;
 import com.skala.uitest.testcase.dto.TestCaseDto;
 import com.skala.uitest.testcase.dto.TestCaseListDto;
@@ -11,6 +14,7 @@ import com.skala.uitest.testcase.repository.TestCaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,7 +57,32 @@ public class TestCaseService {
                 .expectedResult(tc.getExpectedResult())
                 .build();
     }
+    
+    // ✅ 단건 생성
+    public TestCaseDto createTestCaseFromScenario(String scenarioId, TestCaseCreateRequestDto dto) {
+        Scenario scenario = scenarioRepository.findById(scenarioId)
+            .orElseThrow(() -> new IllegalArgumentException("시나리오 ID가 존재하지 않습니다: " + scenarioId));
+    
+        // 시나리오에 속한 테스트케이스 개수 조회 → 다음 번호 계산
+        long count = testCaseRepository.countByScenario_ScenarioId(scenarioId);
+        String nextId = String.format("tc-%03d", count + 1);  // tc-001, tc-002 등
 
+        TestCase entity = TestCase.builder()
+            .testcaseId(nextId)
+            .scenario(scenario)
+            .testcaseName(dto.getTestcaseName())
+            .uiFlow(dto.getUiFlow())
+            .inputData(dto.getInputData())
+            .expectedResult(dto.getExpectedResult())
+            .isSuccess(false)
+            .createdAt(LocalDateTime.now())
+            .build();
+    
+        TestCase saved = testCaseRepository.save(entity);
+        return TestCaseDto.fromEntity(saved);
+    }
+    
+    
 
     // ✅ 단건 수정
     public TestCaseUpdateRequestDto updateTestCase(String id, TestCaseUpdateRequestDto dto) {
