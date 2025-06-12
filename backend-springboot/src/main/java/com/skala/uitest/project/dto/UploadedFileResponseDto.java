@@ -1,6 +1,7 @@
-package com.skala.uitest.uploadedfile.dto;
+package com.skala.uitest.project.dto;
 
-import com.skala.uitest.uploadedfile.enums.FileType;
+import com.skala.uitest.project.enums.FileType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

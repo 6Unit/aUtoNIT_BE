@@ -1,25 +1,18 @@
-package com.skala.uitest.project.controller;
+package com.skala.uitest.project.service;
 
 import com.skala.uitest.project.domain.Project;
 import com.skala.uitest.project.domain.UploadedFile;
-import com.skala.uitest.project.dto.ProjectRequestDto;
 import com.skala.uitest.project.dto.UploadedFileResponseDto;
 import com.skala.uitest.project.enums.FileType;
 import com.skala.uitest.project.repository.ProjectRepository;
 import com.skala.uitest.project.repository.UploadedFileRepository;
-import com.skala.uitest.project.service.ProjectService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -28,71 +21,37 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@RestController
-@RequestMapping("/api/projects")
+@Service
 @RequiredArgsConstructor
-@Tag(name = "Project & Upload API", description = "프로젝트 & 업로드 관련 API")
-public class ProjectController {
+public class UploadedFileService {
 
-    private final ProjectService projectService;
-    private final ProjectRepository projectRepository;
     private final UploadedFileRepository uploadedFileRepository;
+    private final ProjectRepository projectRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    private static final Logger log = LoggerFactory.getLogger(ProjectController.class);
-
-    @PostConstruct
-    public void init() {
-        log.info("✅ uploadDir 설정값: {}", uploadDir);
-    }
-
-    @PostMapping
-    @Operation(summary = "프로젝트 생성", description = "새로운 프로젝트 생성 (이름, 코드 입력)")
-    public Project createProject(@RequestBody ProjectRequestDto dto) {
-        return projectService.createProject(dto);
-    }
-
-    @GetMapping("/{id}/status")
-    @Operation(summary = "프로젝트 상태 확인", description = "업로드/시나리오/테스트케이스 생성 상태 확인")
-    public ResponseEntity<?> getProjectStatus(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(projectService.getDetailedProjectStatus(id));
-    }
-
-    @PostMapping(path = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "프로젝트 파일 업로드", description = "요구사항 엑셀, 소스 ZIP, (선택) 검증 파일 업로드")
     @Transactional
-    public ResponseEntity<?> uploadFiles(
-            @PathVariable("id") Long projectId,
-            @RequestParam("requirement") MultipartFile requirement,
-            @RequestParam("source") MultipartFile source,
-            @RequestParam(value = "validation", required = false) MultipartFile validation
-    ) throws IOException {
+    public List<UploadedFileResponseDto> uploadFiles(Long projectId,
+                                                     MultipartFile requirement,
+                                                     MultipartFile source,
+                                                     MultipartFile validation) throws IOException {
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        List<UploadedFileResponseDto> uploadedFiles = new ArrayList<>();
-        uploadedFiles.add(saveOrUpdateUploadedFile(requirement, FileType.REQUIREMENT, project));
-        uploadedFiles.add(saveOrUpdateUploadedFile(source, FileType.SOURCE, project));
+        List<UploadedFileResponseDto> result = new ArrayList<>();
+        result.add(saveOrUpdateUploadedFile(requirement, FileType.REQUIREMENT, project));
+        result.add(saveOrUpdateUploadedFile(source, FileType.SOURCE, project));
 
         if (validation != null && !validation.isEmpty()) {
-            uploadedFiles.add(saveOrUpdateUploadedFile(validation, FileType.VALIDATION, project));
+            result.add(saveOrUpdateUploadedFile(validation, FileType.VALIDATION, project));
         }
 
-        return ResponseEntity.ok(Map.of(
-                "message", "파일 업로드 성공",
-                "files", uploadedFiles
-        ));
+        return result;
     }
 
-    @GetMapping("/{id}/files/{fileType}")
-    @Operation(summary = "업로드된 파일 다운로드", description = "프로젝트 ID와 파일 타입으로 업로드된 파일을 조회합니다.")
-    public ResponseEntity<?> downloadFile(
-            @PathVariable("id") Long projectId,
-            @PathVariable("fileType") FileType fileType
-    ) {
+    public ResponseEntity<?> downloadFile(Long projectId, FileType fileType) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
@@ -106,7 +65,6 @@ public class ProjectController {
 
         try {
             byte[] fileBytes = Files.readAllBytes(file.toPath());
-
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .header("Content-Disposition", "attachment; filename=\"" + fileEntity.getFileName() + "\"")
