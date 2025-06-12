@@ -2,11 +2,12 @@ package com.skala.uitest.project.service;
 
 import com.skala.uitest.project.domain.Project;
 import com.skala.uitest.project.dto.ProjectRequestDto;
+import com.skala.uitest.project.enums.FileType;
 import com.skala.uitest.project.repository.ProjectRepository;
+import com.skala.uitest.project.repository.UploadedFileRepository;
 import com.skala.uitest.scenario.repository.ScenarioRepository;
 import com.skala.uitest.testcase.repository.TestCaseRepository;
-import com.skala.uitest.uploadedfile.enums.FileType;
-import com.skala.uitest.uploadedfile.repository.UploadedFileRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

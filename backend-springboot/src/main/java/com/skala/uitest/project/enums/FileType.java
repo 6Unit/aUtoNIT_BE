@@ -1,4 +1,4 @@
-package com.skala.uitest.uploadedfile.enums;
+package com.skala.uitest.project.enums;
 
 public enum FileType {
     REQUIREMENT,

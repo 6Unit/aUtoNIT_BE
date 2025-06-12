@@ -1,11 +1,11 @@
-package com.skala.uitest.uploadedfile.domain;
+package com.skala.uitest.project.domain;
 
-import com.skala.uitest.project.domain.Project;
-import com.skala.uitest.uploadedfile.enums.FileType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+
+import com.skala.uitest.project.enums.FileType;
 
 @Entity
 @Getter

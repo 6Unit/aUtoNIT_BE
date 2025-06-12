@@ -1,7 +1,8 @@
-package com.skala.uitest.uploadedfile.repository;
+package com.skala.uitest.project.repository;
 import com.skala.uitest.project.domain.Project;
-import com.skala.uitest.uploadedfile.domain.UploadedFile;
-import com.skala.uitest.uploadedfile.enums.FileType;
+import com.skala.uitest.project.domain.UploadedFile;
+import com.skala.uitest.project.enums.FileType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;

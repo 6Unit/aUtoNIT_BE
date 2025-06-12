@@ -1,13 +1,14 @@
 package com.skala.uitest.scenario.service;
 
 import org.springframework.stereotype.Service;
+
+import com.skala.uitest.project.domain.UploadedFile;
+import com.skala.uitest.project.enums.FileType;
+import com.skala.uitest.project.repository.UploadedFileRepository;
 import com.skala.uitest.scenario.domain.Scenario;
 import com.skala.uitest.scenario.dto.ScenarioDto;
 import com.skala.uitest.scenario.dto.ScenarioUpdateRequestDto;
 import com.skala.uitest.scenario.repository.ScenarioRepository;
-import com.skala.uitest.uploadedfile.domain.UploadedFile;
-import com.skala.uitest.uploadedfile.enums.FileType;
-import com.skala.uitest.uploadedfile.repository.UploadedFileRepository;
 
 import lombok.RequiredArgsConstructor;
 
