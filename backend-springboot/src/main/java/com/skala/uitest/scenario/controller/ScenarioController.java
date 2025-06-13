@@ -35,12 +35,11 @@ public class ScenarioController {
         return scenarioService.getScenariosByProjectId(projectId);
     }
 
-    @Operation(summary = "시나리오 생성 요청", description = "요구사항 기반으로 시나리오 리스트 생성 (LLM 호출)")
+    @Operation(summary = "시나리오 생성 요청", description = "요구사항 기반으로 시나리오 생성 및 저장 (FastAPI 요청)")
     @PostMapping("/generate")
-    public List<ScenarioDto> generateScenarios(@RequestParam("projectId") Long projectId) {
-        return scenarioService.generateScenarios(projectId);
+    public ResponseEntity<?> requestScenarioGeneration(@RequestParam("projectId") Long projectId) {
+        return scenarioService.delegateScenarioGeneration(projectId);
     }
-
     @Operation(summary = "시나리오 단일 추가", description = "특정 프로젝트에 시나리오를 수동 생성합니다.")
     @PostMapping("/{projectId}")
     public ResponseEntity<ScenarioDto> createScenario(

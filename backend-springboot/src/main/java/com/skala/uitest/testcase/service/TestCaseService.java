@@ -12,7 +12,15 @@ import com.skala.uitest.testcase.dto.TestCaseListDto;
 import com.skala.uitest.testcase.dto.TestCaseUpdateRequestDto;
 import com.skala.uitest.testcase.repository.TestCaseRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,14 +33,28 @@ public class TestCaseService {
 
     private final TestCaseRepository testCaseRepository;
     private final ScenarioRepository scenarioRepository;
+    private final RestTemplate restTemplate;
 
-    // ✅ 저장 (FastAPI 생성 결과 저장)
-    public List<TestCase> saveTestCases(List<TestCaseDto> dtos) {
-        List<TestCase> entities = dtos.stream()
-                .map(this::toEntity)
-                .toList();
-        return testCaseRepository.saveAll(entities);
+    // ✅ 테스트케이스 생성 요청
+    public ResponseEntity<?> delegateTestCaseGeneration(List<String> scenarioIds) {
+        String fastApiUrl = "http://localhost:8000/generate-and-save-testcases";
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<List<String>> request = new HttpEntity<>(scenarioIds, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(fastApiUrl, request, String.class);
+
+            return ResponseEntity.ok(response.getBody());
+
+        } catch (RestClientException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("FastAPI 호출 실패: " + e.getMessage());
+        }
     }
+
 
     // ✅ 시나리오별 조회 (테스트케이스 ID + 이름만 반환)
     public List<TestCaseListDto> getTestCasesByScenario(String scenarioId) {

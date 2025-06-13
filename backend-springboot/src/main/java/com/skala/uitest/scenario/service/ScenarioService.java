@@ -2,8 +2,6 @@ package com.skala.uitest.scenario.service;
 
 import org.springframework.stereotype.Service;
 
-import com.skala.uitest.project.domain.UploadedFile;
-import com.skala.uitest.project.enums.FileType;
 import com.skala.uitest.project.repository.UploadedFileRepository;
 import com.skala.uitest.scenario.domain.Scenario;
 import com.skala.uitest.scenario.dto.ScenarioDto;
@@ -14,17 +12,12 @@ import com.skala.uitest.project.repository.ProjectRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +27,6 @@ public class ScenarioService {
 
     private final ProjectRepository projectRepository;
     private final ScenarioRepository scenarioRepository;
-    private final UploadedFileRepository fileRepository;
     private final RestTemplate restTemplate;
 
     // 전체 시나리오 조회(시나리오ID, 시나리오명, 시나리오 설명)
@@ -49,36 +41,18 @@ public class ScenarioService {
     }
     
     // 시나리오 생성 (LLM 호출)
-    public List<ScenarioDto> generateScenarios(Long projectId) {
-        // 1. 요구사항 파일 조회 (.xlsx 파일이 저장되어 있어야 함)
-        UploadedFile reqFile = fileRepository.findByProject_ProjectIdAndFileType(projectId, FileType.REQUIREMENT)
-            .orElseThrow(() -> new RuntimeException("요구사항 파일이 존재하지 않습니다."));
-    
-        // 2. 파일 존재 여부 및 확장자 확인 (선택)
-        if (!reqFile.getFilePath().endsWith(".xlsx")) {
-            throw new RuntimeException("요구사항 파일은 .xlsx 형식이어야 합니다.");
+    public ResponseEntity<?> delegateScenarioGeneration(Long projectId) {
+        // URL 수정 필요
+        String fastApiUrl = "http://localhost:8000/generate-and-save?project_id=" + projectId;
+
+        // FastAPI에 요청 보냄 (본문 없이 쿼리파라미터만)
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(fastApiUrl, null, String.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (RestClientException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("FastAPI 호출 실패: " + ex.getMessage());
         }
-    
-        // 3. FastAPI 서버 호출
-        String url = "http://fastapi:8000/generate-scenarios";  // FastAPI 경로가 정확한지 확인 필요
-    
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new FileSystemResource(reqFile.getFilePath()));
-    
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-    
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<ScenarioDto[]> response = restTemplate.postForEntity(url, requestEntity, ScenarioDto[].class);
-    
-        List<ScenarioDto> scenarios = Arrays.asList(response.getBody());
-    
-        // 4. DB에 저장
-        for (ScenarioDto dto : scenarios) {
-            scenarioRepository.save(dto.toEntity());
-        }
-    
-        return scenarios;
     }
     
     // 단일 시나리오 수동 생성
